@@ -33,7 +33,6 @@ def create_user(values):
     
     data = datetime.datetime.now(timezone)
     print(f'Valores: {values}')
-    values = list(values)
     
     if len(values) >= 4:  # Verificando se values tem pelo menos 4 elementos
         query = "INSERT INTO usuarios (nome, email, idade, salario, data_criacao) VALUES (%s, %s, %s, %s, %s)"
@@ -61,3 +60,56 @@ def get_user(email):
     cnx.close()
     
     return result
+
+def delete_user(email):
+    cnx = get_connection()
+    cursor = cnx.cursor()
+    
+    # Verifica se o email existe na tabela
+    query = "SELECT * FROM usuarios WHERE email = %s"
+    cursor.execute(query, (email,))
+    result = cursor.fetchone()
+    
+    if result is None:
+        # O email não existe, retorne um código de status indicando que o email não foi encontrado
+        cursor.close()
+        cnx.close()
+        return 400
+    
+    # O email existe, então execute a exclusão do usuário
+    query = "DELETE FROM usuarios WHERE email = %s"
+    cursor.execute(query, (email,))
+    cnx.commit()
+    
+    cursor.close()
+    cnx.close()
+    return 200
+
+def check_user(email):
+    cnx = get_connection()
+    cursor = cnx.cursor()
+    
+    # Verifica se o email existe na tabela
+    query = "SELECT * FROM usuarios WHERE email = %s"
+    cursor.execute(query, (email,))
+    result = cursor.fetchone()
+    
+    if result is None:
+        # O email não existe, retorne um código de status indicando que o email não foi encontrado
+        cursor.close()
+        cnx.close()
+        return 400
+    
+    return 200
+
+def update_user(query, values):
+    cnx = get_connection()
+    cursor = cnx.cursor()
+    
+    cursor.execute(query, values)
+    
+    cnx.commit()
+    cursor.close()
+    cnx.close()
+    
+    return 200
